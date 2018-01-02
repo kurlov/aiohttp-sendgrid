@@ -3,7 +3,7 @@ import asyncio
 import os
 
 
-API_KEY = os.environ.get('SENDGRID_API_KEY', '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')
+API_KEY = os.environ.get('SENDGRID_API_KEY')
 API_URL = 'https://api.sendgrid.com/v3/mail/send'
 auth = 'Bearer ' + str(API_KEY)
 headers = {'content-type': 'application/json', 'authorization': auth}
