@@ -10,8 +10,11 @@ headers = {'content-type': 'application/json', 'authorization': auth}
 loop = asyncio.get_event_loop()
 
 async def fetch(session, url, payload):
-    async with session.post(url, data=payload, headers=headers) as response:
-        return await response.json()
+    async with session.post(url, json=payload, headers=headers) as response:
+        if response.status == 202:
+            return await response.text()
+        else:
+            return await response.json()
 
 async def send(payload):
     async with aiohttp.ClientSession(loop=loop) as session:
