@@ -22,12 +22,12 @@ class Sendgrid(object):
         auth = 'Bearer ' + str(self.api_key)
         self.headers = {'authorization': auth}
 
-    async def send(self, to, sender, subject, content, content_type='text/html'):
+    async def send(self, to, sender, subject, content, body_type='text/html'):
         def generate_payload():
             payload = {'personalizations': []}
             tos = {'to': [{'email': to}]}
             send_from = {"email": sender}
-            body = [{'type': content_type, 'value': content}]
+            body = [{'type': body_type, 'value': content}]
             payload['personalizations'].append(tos)
             payload['from'] = send_from
             payload['subject'] = 'subject'
