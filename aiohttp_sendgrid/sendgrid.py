@@ -23,7 +23,7 @@ class Sendgrid(object):
         auth = 'Bearer ' + str(self.api_key)
         self.headers = {'authorization': auth}
 
-    def send(self, to, sender, subject, content, content_type='text/html'):
+    async def send(self, to, sender, subject, content, content_type='text/html'):
         def generate_payload():
             payload = {'personalizations': []}
             tos = {'to': [{'email': to}]}
@@ -36,7 +36,7 @@ class Sendgrid(object):
             return payload
         url = SENDGRID_API_URL + SEND_URN
         payload = generate_payload()
-        async with aiohttp.ClientSession(loop=self.loop) as session:
+        async with aiohttp.ClientSession() as session:
             response = await self._post(session, url, payload)
             print(response)
 
