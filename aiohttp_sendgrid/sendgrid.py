@@ -19,7 +19,6 @@ class Sendgrid(object):
             self.api_key = os.environ.get('SENDGRID_API_KEY')
         if not self.api_key:
             raise ValueError('No API key provided')
-        self.loop = asyncio.get_event_loop()
         auth = 'Bearer ' + str(self.api_key)
         self.headers = {'authorization': auth}
 
