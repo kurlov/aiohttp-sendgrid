@@ -37,7 +37,7 @@ class Sendgrid(object):
         payload = generate_payload()
         async with aiohttp.ClientSession() as session:
             response = await self._post(session, url, payload)
-            print(response)
+            return response
 
     async def _post(self, session, url, payload):
         async with session.post(url, json=payload, headers=self.headers) as r:
