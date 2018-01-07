@@ -1,6 +1,10 @@
 aiohttp-sendgrid
 ================
-SendGrid Web API v3 aiohttp wrapper
+SendGrid mail API wrapper
+
+Installation
+------------
+``pip install aiohttp_sendgrid``
 
 Basic Usage
 -----------
