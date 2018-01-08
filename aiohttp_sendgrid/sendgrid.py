@@ -1,5 +1,4 @@
 import aiohttp
-import asyncio
 import os
 
 SENDGRID_API_URL = 'https://api.sendgrid.com/v3'
@@ -25,12 +24,12 @@ class Sendgrid(object):
     async def send(self, to, sender, subject, content, body_type='text/html'):
         def generate_payload():
             payload = {'personalizations': []}
-            tos = {'to': [{'email': to}]}
-            send_from = {"email": sender}
+            tos = {'to': self._parse_to_emails(to)}
+            send_from = self._parse_from_email(sender)
             body = [{'type': body_type, 'value': content}]
             payload['personalizations'].append(tos)
             payload['from'] = send_from
-            payload['subject'] = 'subject'
+            payload['subject'] = subject
             payload['content'] = body
             return payload
         url = SENDGRID_API_URL + SEND_URN
@@ -45,3 +44,38 @@ class Sendgrid(object):
                 return await r.text()
             else:
                 return await r.json()
+
+    @staticmethod
+    def _generate_email(self, email, name=None):
+        result = {'email': email}
+        if name:
+            result['name'] = name
+        return result
+
+    @staticmethod
+    def _parse_to_emails(self, to_emails):
+        tos = []
+        if isinstance(to_emails, str):
+            tos.append(self._generate_email(to_emails))
+        elif isinstance(to_emails, dict):
+            tos.append(self._generate_email(**to_emails))
+        elif isinstance(to_emails, (list, tuple, set)):
+            for email in to_emails:
+                if isinstance(email, str):
+                    tos.append(self._generate_email(email))
+                elif isinstance(email, dict):
+                    tos.append(self._generate_email(**email))
+                else:
+                    raise ValueError('Invalid to email address')
+        else:
+            raise ValueError('Invalid to email address')
+        return tos
+
+    @staticmethod
+    def _parse_from_email(self, from_email):
+        if isinstance(from_email, str):
+            return self._generate_email(from_email)
+        elif isinstance(from_email, dict):
+            return self._generate_email(**from_email)
+        else:
+            raise ValueError('Invalid from email adress')
