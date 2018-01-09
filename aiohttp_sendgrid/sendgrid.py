@@ -46,20 +46,19 @@ class Sendgrid(object):
                 return await r.json()
 
     @staticmethod
-    def _generate_email(self, email, name=None):
+    def _generate_email(email, name=None):
         result = {'email': email}
         if name:
             result['name'] = name
         return result
 
-    @staticmethod
     def _parse_to_emails(self, to_emails):
         tos = []
         if isinstance(to_emails, str):
             tos.append(self._generate_email(to_emails))
         elif isinstance(to_emails, dict):
             tos.append(self._generate_email(**to_emails))
-        elif isinstance(to_emails, (list, tuple, set)):
+        elif isinstance(to_emails, (list, tuple)):
             for email in to_emails:
                 if isinstance(email, str):
                     tos.append(self._generate_email(email))
@@ -71,7 +70,6 @@ class Sendgrid(object):
             raise ValueError('Invalid to email address')
         return tos
 
-    @staticmethod
     def _parse_from_email(self, from_email):
         if isinstance(from_email, str):
             return self._generate_email(from_email)
