@@ -1,12 +1,16 @@
 aiohttp-sendgrid
 ================
+.. image:: https://travis-ci.org/Kurlov/aiohttp-sendgrid.svg?branch=master
+    :target: https://travis-ci.org/Kurlov/aiohttp-sendgrid
+.. image:: https://badge.fury.io/py/aiohttp-sendgrid.svg
+    :target: https://badge.fury.io/py/aiohttp-sendgrid
 SendGrid mail API wrapper
 
 Installation
 ------------
 ``pip install aiohttp_sendgrid``
 
-Send email to single recipients
+Send email to single recipient
 -------------------------------
 .. code:: python
 
