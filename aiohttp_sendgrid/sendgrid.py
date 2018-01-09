@@ -6,13 +6,18 @@ SEND_URN = '/mail/send'
 
 
 class Sendgrid(object):
-    """Wrapper around sendgrid v3 API. """
+    """This class performs requests to sendgrid Mail Send v3 API.
+
+    More detailed information about Mail Send endpoint might be found here:
+    https://sendgrid.com/docs/API_Reference/api_v3.html
+
+    :param api_key: A string with sendgrid API key, if not provided
+                    ``SENDGRID_API_KEY`` environment variable will be used.
+                    You can manage your API keys
+                    in settings -> API keys in your sendgrid account.
+    """
 
     def __init__(self, api_key=None):
-        """Create wrapper instance
-
-        if non Sendgrid API key provided, get it from env variable
-        """
         self.api_key = api_key
         if not api_key:
             self.api_key = os.environ.get('SENDGRID_API_KEY')
@@ -22,7 +27,28 @@ class Sendgrid(object):
         self.headers = {'authorization': auth}
 
     async def send(self, to, sender, subject, content, body_type='text/html'):
+        """This coroutine performs ``/mail/send`` POST requests via ``aiohttp``
+
+            :param to: Might be a ``string`` with email address or dictionary
+                       with ``email`` key, ``name``(optional). Also
+                       might be list or tuple of strings or dictionaries.
+                       Both list and tuple might be heterogeneous,
+                       it is okey to put strigns and dictionaries together.
+                       This parameters specifies email recipient(s)
+            :param sender: Might be a ``string`` with email address or
+                           dictionary with ``email`` key, ``name``(optional).
+                           Specifies from which address email(s) will be sent.
+            :param subject: A string with email subject
+            :param content: A string which contains actual content of email.
+                            It depends on ``body_type`` how it will be viewed.
+            :param body_type: (optional) a string which specifies mime type
+                              of the content.
+                              By default it equals to ``text/html``.
+                              Might be ``text/html`` or ``text/plain``
+        """
         def generate_payload():
+            """Closure to aplly parse functions on input data: ``to``, ``sender``
+            """
             payload = {'personalizations': []}
             tos = {'to': self._parse_to_emails(to)}
             send_from = self._parse_from_email(sender)
