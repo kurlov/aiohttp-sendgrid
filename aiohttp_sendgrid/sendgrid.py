@@ -28,6 +28,18 @@ class Sendgrid(object):
 
     async def send(self, to, sender, subject, content, body_type='text/html'):
         """This coroutine performs ``/mail/send`` POST requests via ``aiohttp``
+            Example::
+
+            mailer = Sendgrid()
+            # to might be heterogeneous
+            to = ['name@example.com', {'email': 'name2@example.com'},
+                  {'email': 'name3example.com', 'name': 'Name3'}]
+            # also might be a dictionary with ``email``and ``name`` keys
+            sender = 'from.me@example.com'
+            subject = 'greetings'
+            # default mime type is ``text/html``
+            content = '<h1>Hello, world</h1>'
+            mailer.send(to, sender, subject, content)
 
             :param to: Might be a ``string`` with email address or dictionary
                        with ``email`` key, ``name``(optional). Also
@@ -45,6 +57,8 @@ class Sendgrid(object):
                               of the content.
                               By default it equals to ``text/html``.
                               Might be ``text/html`` or ``text/plain``
+
+            # TODO: add cc, bcc, reply_to support
         """
         def generate_payload():
             """Closure to aplly parse functions on input data: ``to``, ``sender``
@@ -65,6 +79,12 @@ class Sendgrid(object):
             return response
 
     async def _post(self, session, url, payload):
+        """Helper coroutine to fetch post requests via ``aiohttp.ClientSession``
+
+            :param session: a ``aiohttp.ClientSession`` object
+            :param url: a string with url to fetch
+            :param payload: a dictionary which will be passed as JSON for POST
+        """
         async with session.post(url, json=payload, headers=self.headers) as r:
             if r.status == 202:
                 return await r.text()
@@ -73,12 +93,40 @@ class Sendgrid(object):
 
     @staticmethod
     def _generate_email(email, name=None):
+        """Helper to convert values into email dictionary.
+
+            :param email: a string with email address
+            :param name: (optional) a string with recipient's name
+            :return dictionary object
+        """
         result = {'email': email}
         if name:
             result['name'] = name
         return result
 
     def _parse_to_emails(self, to_emails):
+        """Helper which helps to parse recipient(s) information.
+
+            Example of valid input::
+
+            'name@example.com'
+            {'email': 'name@example.com'}
+            {'email': 'name@example.com', 'name': 'Name'}
+            ['name@example.com']
+            ['name@example.com', 'name2@example.com']
+            [{'email': 'name@example.com'}]
+            [{'email': 'name@example.com'}, {'email': 'name2@example.com'}]
+            [{'email': 'name@example.com', 'name': 'Name'}]
+            [{'email': 'name@example.com', 'name': 'Name'},
+             {'email': 'name2@example.com', 'name': 'Name2'}]
+            ['name@example.com', {'email': 'name2@example.com'},
+             {'email': 'name3@example.com', 'name': 'Name3'}]
+
+            :param to_emails: might be a string of dictionary with ``email``
+                              key, ``name`` key is optional. Also might be a
+                              list or tuple with appropriate strings or
+                              dictionaries
+        """
         tos = []
         if isinstance(to_emails, str):
             tos.append(self._generate_email(to_emails))
@@ -91,12 +139,17 @@ class Sendgrid(object):
                 elif isinstance(email, dict):
                     tos.append(self._generate_email(**email))
                 else:
-                    raise ValueError('Invalid to email address')
+                    raise ValueError('Invalid data format')
         else:
-            raise ValueError('Invalid to email address')
+            raise ValueError('Invalid data format')
         return tos
 
     def _parse_from_email(self, from_email):
+        """Helper for parsing sender's email.
+
+            :param from_email: might be a string or dictionary with ``email``
+                               key, ``name`` key is optional
+        """
         if isinstance(from_email, str):
             return self._generate_email(from_email)
         elif isinstance(from_email, dict):
