@@ -55,3 +55,17 @@ Send single email to multiple recipients
     loop.run_until_complete(send_mail)
 
 ``to`` might be tuple or list of strings or dictionaries.
+Example of valid input::
+
+           'name@example.com'
+           {'email': 'name@example.com'}
+           {'email': 'name@example.com', 'name': 'Name'}
+           ['name@example.com']
+           ['name@example.com', 'name2@example.com']
+           [{'email': 'name@example.com'}]
+           [{'email': 'name@example.com'}, {'email': 'name2@example.com'}]
+           [{'email': 'name@example.com', 'name': 'Name'}]
+           [{'email': 'name@example.com', 'name': 'Name'},
+            {'email': 'name2@example.com', 'name': 'Name2'}]
+           ['name@example.com', {'email': 'name2@example.com'},
+            {'email': 'name3@example.com', 'name': 'Name3'}]
