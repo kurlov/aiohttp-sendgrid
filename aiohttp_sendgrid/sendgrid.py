@@ -128,20 +128,15 @@ class Sendgrid(object):
                               dictionaries
         """
         tos = []
-        if isinstance(to_emails, str):
-            tos.append(self._generate_email(to_emails))
-        elif isinstance(to_emails, dict):
-            tos.append(self._generate_email(**to_emails))
-        elif isinstance(to_emails, (list, tuple)):
-            for email in to_emails:
-                if isinstance(email, str):
-                    tos.append(self._generate_email(email))
-                elif isinstance(email, dict):
-                    tos.append(self._generate_email(**email))
-                else:
-                    raise ValueError('Invalid data format')
-        else:
-            raise ValueError('Invalid data format')
+        if not isinstance(to_emails, (list, tuple)):
+            to_emails = [to_emails]
+        for email in to_emails:
+            if isinstance(email, str):
+                tos.append(self._generate_email(email))
+            elif isinstance(email, dict):
+                tos.append(self._generate_email(**email))
+            else:
+                raise ValueError('Invalid data format')
         return tos
 
     def _parse_from_email(self, from_email):
