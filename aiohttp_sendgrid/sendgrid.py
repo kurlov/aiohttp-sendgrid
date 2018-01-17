@@ -5,7 +5,7 @@ SENDGRID_API_URL = 'https://api.sendgrid.com/v3'
 SEND_URN = '/mail/send'
 
 
-class Sendgrid(object):
+class Sendgrid:
     """This class performs requests to sendgrid Mail Send v3 API.
 
     More detailed information about Mail Send endpoint might be found here:
