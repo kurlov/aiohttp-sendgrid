@@ -25,6 +25,7 @@ class Sendgrid:
             raise ValueError('No API key provided')
         auth = 'Bearer ' + str(self.api_key)
         self.headers = {'authorization': auth}
+        self.send_url = SENDGRID_API_URL + SEND_URN
 
     async def send(self, to, sender, subject, content, body_type='text/html'):
         """This coroutine performs ``/mail/send`` POST requests via ``aiohttp``
@@ -72,11 +73,23 @@ class Sendgrid:
             payload['subject'] = subject
             payload['content'] = body
             return payload
-        url = SENDGRID_API_URL + SEND_URN
         payload = generate_payload()
         async with aiohttp.ClientSession() as session:
-            response = await self._post(session, url, payload)
+            response = await self._post(session, self.send_url, payload)
             return response
+
+    async def send_sgmail(self, sgmail):
+        """Convinient way to send existing `sendgrid.helpers.mail.Mail` object
+
+            :param sgmail: A `sendgrid.helpers.mail.Mail` object
+        """
+        try:
+            payload = sgmail.get()
+            async with aiohttp.ClientSession() as session:
+                response = await self._post(session, self.send_url, payload)
+                return response
+        except AttributeError:
+            raise ValueError("Cannot parse sgmail object")
 
     async def _post(self, session, url, payload):
         """Helper coroutine to fetch post requests via ``aiohttp.ClientSession``
