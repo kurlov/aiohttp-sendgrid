@@ -110,7 +110,7 @@ class Sendgrid:
 
             :param email: a string with email address
             :param name: (optional) a string with recipient's name
-            :return dictionary object
+            :return: dictionary object
         """
         result = {'email': email}
         if name:
