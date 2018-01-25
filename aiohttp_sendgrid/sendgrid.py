@@ -1,5 +1,6 @@
 import aiohttp
 import os
+import sendgrid
 
 SENDGRID_API_URL = 'https://api.sendgrid.com/v3'
 SEND_URN = '/mail/send'
