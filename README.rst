@@ -69,3 +69,8 @@ Example of valid input::
             {'email': 'name2@example.com', 'name': 'Name2'}]
            ['name@example.com', {'email': 'name2@example.com'},
             {'email': 'name3@example.com', 'name': 'Name3'}]
+
+Development
+-----------
+``pip install -r requirements.dev.txt``
+

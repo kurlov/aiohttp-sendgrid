@@ -1,6 +1,5 @@
 import aiohttp
 import os
-import sendgrid
 
 SENDGRID_API_URL = 'https://api.sendgrid.com/v3'
 SEND_URN = '/mail/send'
@@ -28,7 +27,7 @@ class Sendgrid:
         self.headers = {'authorization': auth}
         self.send_url = SENDGRID_API_URL + SEND_URN
 
-    async def send(self, to, sender, subject, content, body_type='text/html'):
+    async def send(self, to, sender, subject, content, body_type='text/html', sandbox=False):
         """This coroutine performs ``/mail/send`` POST requests via ``aiohttp``
             Example::
 
@@ -59,6 +58,9 @@ class Sendgrid:
                               of the content.
                               By default it equals to ``text/html``.
                               Might be ``text/html`` or ``text/plain``
+            :param sandbox: (optional) whether the mail should be sent in
+                            sandbox mode or not. See
+                            https://sendgrid.com/docs/for-developers/sending-email/sandbox-mode/
 
             # TODO: add cc, bcc, reply_to support
         """
@@ -73,6 +75,13 @@ class Sendgrid:
             payload['from'] = send_from
             payload['subject'] = subject
             payload['content'] = body
+
+            if sandbox:
+                payload["mail_settings"] = {
+                    "sandbox_mode": {
+                        "enable": True
+                    }
+                }
             return payload
         payload = generate_payload()
         async with aiohttp.ClientSession() as session:
@@ -80,7 +89,7 @@ class Sendgrid:
             return response
 
     async def send_sgmail(self, sgmail):
-        """Convinient way to send existing `sendgrid.helpers.mail.Mail` object
+        """Convenient way to send existing `sendgrid.helpers.mail.Mail` object
 
             :param sgmail: A `sendgrid.helpers.mail.Mail` object
         """
